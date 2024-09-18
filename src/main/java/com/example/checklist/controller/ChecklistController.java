@@ -9,14 +9,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
 
+import com.example.checklist.dto.ReqAddTodo;
+import com.example.checklist.dto.ReqCreateChecklist;
+import com.example.checklist.dto.ReqRenameTodo;
 import com.example.checklist.model.Checklist;
 import com.example.checklist.model.Todo;
 import com.example.checklist.service.ChecklistService;
 
 @Controller
+@RequestMapping("/api")
 public class ChecklistController {
     
     @Autowired
@@ -29,7 +34,10 @@ public class ChecklistController {
     }
 
     @PostMapping("/checklist")
-    public ResponseEntity<Checklist> createChecklist(@RequestBody Checklist checklist) {
+    public ResponseEntity<Checklist> createChecklist(@RequestBody ReqCreateChecklist dto) {
+        Checklist checklist = new Checklist();
+        checklist.setName(dto.getName());
+
         Checklist c = service.createChecklist(checklist);
         return ResponseEntity.ok(c);
     }
@@ -55,13 +63,16 @@ public class ChecklistController {
         }
     }
 
-    @PostMapping("/checklist/{id}/item")
-    public ResponseEntity<Checklist> addTodo(@PathVariable Long id, @RequestBody Todo todo) {
-        Checklist c = service.getChecklistById(id);
+    @PostMapping("/checklist/{idChecklist}/item")
+    public ResponseEntity<Checklist> addTodo(@PathVariable Long idChecklist, @RequestBody ReqAddTodo dto) {
+        Checklist c = service.getChecklistById(idChecklist);
         if (c == null) {
             return ResponseEntity.badRequest().build();
         } else {
-            service.addTodo(c, todo);
+            Todo newTodo = new Todo();
+            newTodo.setDescription(dto.getItemName());
+
+            service.addTodo(c, newTodo);
             return ResponseEntity.ok(c);
         }
     }
@@ -82,8 +93,8 @@ public class ChecklistController {
         }
     }
 
-    @PutMapping("/checklist/{idChecklist}/item/{idTodo}")
-    public ResponseEntity<Todo> updateTodo(@PathVariable Long idChecklist, @PathVariable Long idTodo, @RequestBody Todo todo) {
+    @PutMapping("/checklist/{idChecklist}/item/rename/{idTodo}")
+    public ResponseEntity<Todo> renameTodo(@PathVariable Long idChecklist, @PathVariable Long idTodo, @RequestBody ReqRenameTodo dto) {
         Checklist c = service.getChecklistById(idChecklist);
         if (c == null) {
             return ResponseEntity.badRequest().build();
@@ -93,15 +104,14 @@ public class ChecklistController {
             if (t == null) {
                 return ResponseEntity.badRequest().build();
             } else {
-                todo.setId(t.getId());
-                todo.setIdChecklist(idChecklist);
-                Todo tt = service.saveTodo(c, todo);
+                t.setDescription(dto.getItemName());
+                Todo tt = service.saveTodo(c, t);
                 return ResponseEntity.ok(tt);
             }
         }
     }
 
-    @PostMapping("/checklist/{idChecklist}/{idTodo}/toggle")
+    @PutMapping("/checklist/{idChecklist}/item/{idTodo}")
     public ResponseEntity<Todo> toggleTodo(@PathVariable Long idChecklist, @PathVariable Long idTodo) {
         Checklist c = service.getChecklistById(idChecklist);
         if (c == null) {

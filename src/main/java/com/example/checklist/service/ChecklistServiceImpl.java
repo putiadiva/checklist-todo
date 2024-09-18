@@ -47,31 +47,20 @@ public class ChecklistServiceImpl implements ChecklistService {
 
     @Override
     public Checklist addTodo(Checklist checklist, Todo todo) {
-        for (Checklist c : listChecklist) {
-            if (c.getId() == checklist.getId()) {
-                addTodoHelper(checklist, todo);
-
-                return c;
-            }
-        }
-
-        return null;
-    }
-
-    private void addTodoHelper(Checklist checklist, Todo todo) {
-        // dummy id generation
         if (checklist.getTodos() == null) {
             List<Todo> lst = new ArrayList<>();
             checklist.setTodos(lst);
         }
 
-        Long id = checklist.getTodos().size() + 1L;
-        Todo t = new Todo();
-        t.setId(id);
-        t.setDescription(todo.getDescription());
-        t.setDone(false);
-        t.setIdChecklist(checklist.getId());
-        checklist.getTodos().add(t);
+        Long id = checklist.getTodos().size() + 1L; //dummy id generation
+        todo.setId(id);
+        todo.setDescription(todo.getDescription());
+        todo.setDone(false);
+        todo.setIdChecklist(checklist.getId());
+
+        checklist.getTodos().add(todo);
+
+        return checklist;
     }
 
     @Override
