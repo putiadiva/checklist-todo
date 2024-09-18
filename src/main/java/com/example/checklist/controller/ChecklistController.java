@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
@@ -21,19 +22,19 @@ public class ChecklistController {
     @Autowired
     private ChecklistService service;
 
-    @GetMapping("/checklist/all")
+    @GetMapping("/checklist")
     public ResponseEntity<List<Checklist>> getAllChecklist() {
         List<Checklist> list = service.getAllChecklist();
         return ResponseEntity.ok(list);
     }
 
-    @PostMapping("/checklist/create")
+    @PostMapping("/checklist")
     public ResponseEntity<Checklist> createChecklist(@RequestBody Checklist checklist) {
         Checklist c = service.createChecklist(checklist);
         return ResponseEntity.ok(c);
     }
 
-    @GetMapping("/checklist/{id}")
+    @GetMapping("/checklist/{id}/item")
     public ResponseEntity<Checklist> detailChecklist(@PathVariable Long id) {
         Checklist c = service.getChecklistById(id);
         if (c == null) {
@@ -43,7 +44,7 @@ public class ChecklistController {
         }
     }
 
-    @DeleteMapping("/checklist/{id}/delete")
+    @DeleteMapping("/checklist/{id}")
     public ResponseEntity<Void> deleteChecklist(@PathVariable Long id) {
         Checklist c = service.getChecklistById(id);
         if (c == null) {
@@ -54,7 +55,7 @@ public class ChecklistController {
         }
     }
 
-    @PostMapping("/checklist/{id}/add")
+    @PostMapping("/checklist/{id}/item")
     public ResponseEntity<Checklist> addTodo(@PathVariable Long id, @RequestBody Todo todo) {
         Checklist c = service.getChecklistById(id);
         if (c == null) {
@@ -65,7 +66,7 @@ public class ChecklistController {
         }
     }
 
-    @GetMapping("/checklist/{idChecklist}/{idTodo}")
+    @GetMapping("/checklist/{idChecklist}/item/{idTodo}")
     public ResponseEntity<Todo> detailTodo(@PathVariable Long idChecklist, @PathVariable Long idTodo) {
         Checklist c = service.getChecklistById(idChecklist);
         if (c == null) {
@@ -81,7 +82,7 @@ public class ChecklistController {
         }
     }
 
-    @PostMapping("/checklist/{idChecklist}/{idTodo}/update")
+    @PutMapping("/checklist/{idChecklist}/item/{idTodo}")
     public ResponseEntity<Todo> updateTodo(@PathVariable Long idChecklist, @PathVariable Long idTodo, @RequestBody Todo todo) {
         Checklist c = service.getChecklistById(idChecklist);
         if (c == null) {
@@ -118,7 +119,7 @@ public class ChecklistController {
         }
     }
 
-    @DeleteMapping("/checklist/{idChecklist}/{idTodo}/delete")
+    @DeleteMapping("/checklist/{idChecklist}/item/{idTodo}")
     public ResponseEntity<Todo> deleteTodo(@PathVariable Long idChecklist, @PathVariable Long idTodo) {
         Checklist c = service.getChecklistById(idChecklist);
         if (c == null) {
